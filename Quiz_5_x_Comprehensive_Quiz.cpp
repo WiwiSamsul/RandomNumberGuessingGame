@@ -1,0 +1,135 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+
+// Question 1 has been answered in FallingBallCalculator.cpp
+
+/*
+1. Generate a random integer from 1 - 100
+
+2. initialize playAgain(true) as long as this variable stays true, continue the loop
+would you like to play again? if user input 'n', change to false
+
+*/
+
+char getOneChar()
+{
+	char input;
+	std::cin >> input;
+	std::cin.ignore(32767,'\n');
+	return input;
+}
+
+bool checkPlayAgain()
+{
+	bool output{true};
+	
+	while (true)
+	{
+		std::cout << "Would you like to play again (y/n)?";
+		char choice = getOneChar();
+		switch (choice)
+		{
+			case 'y':
+				return true;
+				break;
+			case 'Y':
+				return true;
+				break;
+			case 'n':
+				return false;
+				break;
+			case 'N':
+				return false;
+				break;
+			default:
+				std::cout << "Invalid input. Please try again.\n";
+				continue;
+		}
+	}
+}
+
+int getRandomInt(int min, int max)
+{
+	static const double fraction = 1.0/(RAND_MAX + 1.0);
+	return (min + static_cast<int>((max - min + 1)*(rand()*fraction)));
+}
+
+int getUsersGuess()
+{
+	int guess{0};
+	while (true)
+	{
+		std::cin >> guess;
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(32767,'\n');
+			std::cout << "Invalid guess. Please try again.\n";
+		}
+		else
+		{
+			std::cin.ignore(32767,'\n');
+			return guess;
+		}
+	}
+}
+
+int gameInitialization(int guessChances, int min, int max)
+{
+	std::cout << "A wild random number between " << min << " to " << max << " appeared! You have " << guessChances << " chances to guess what it is.\n";
+	return getRandomInt(min, max);
+}
+
+bool guessChecker(int theAnswer, int playersGuess)
+{
+	if (playersGuess > theAnswer)
+	{
+		std::cout << "Your guess is too high.\n";
+		return false;
+	}
+	else if (playersGuess < theAnswer)
+	{
+		std::cout << "Your guess is too low.\n";
+		return false;
+	}
+	std::cout << "Correct! You win!\n";
+	return true;
+}
+
+int main()
+{
+	srand(static_cast<unsigned int>(time(0)));
+	
+	bool playAgain{true};
+	int guessChances{7};
+	int min{1}; int max{100}; // these will serve as the min-max of the random number
+	int randomNumber{0};
+	int playersGuess{0};
+	int guessCount{1};
+	bool guessStatus{false};
+	
+	while (playAgain)
+	{
+		randomNumber = gameInitialization(guessChances, min, max);
+		guessCount = 1; guessStatus = false;
+		
+		while ((guessCount <= guessChances) && !guessStatus)
+		{
+			std::cout << "Guess #" << guessCount << ": ";
+			playersGuess = getUsersGuess();
+			guessStatus = guessChecker(randomNumber, playersGuess);
+			++guessCount;
+		}
+				
+		playAgain = checkPlayAgain();
+	}
+	
+	
+	
+	std::cout << "Thank you for playing.\n";
+	return 0;
+}
+
+
